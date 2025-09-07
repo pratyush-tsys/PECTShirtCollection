@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shirt Collection Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* ...existing styles... */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); animation: slideIn 0.8s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h2 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
+        .header .subtitle { color: #666; font-size: 1rem; font-weight: 400; }
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; color: #444; font-weight: 500; margin-bottom: 8px; font-size: 1rem; }
+        .input-container { position: relative; display: flex; gap: 10px; align-items: stretch; }
+        .employeeid-input { flex: 1; padding: 15px 20px; padding-left: 50px; border: 2px solid #e1e8f0; border-radius: 15px; font-size: 1rem; transition: all 0.3s ease; background: white; outline: none; font-family: 'Poppins', sans-serif; }
+        .employeeid-input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); transform: translateY(-2px); }
+        .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #999; font-size: 1.1rem; z-index: 2; }
+        .submit-btn { padding: 15px 25px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 15px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; min-width: 120px; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
+        .submit-btn:active { transform: translateY(0); }
+        .result-container { margin-top: 30px; }
+        .result-box { padding: 20px; border-radius: 15px; margin-bottom: 15px; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .success-box { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); border: 2px solid #20bf6b; color: #0d5d2a; }
+        .error-box { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border: 2px solid #ff6b6b; color: #d63031; }
+        .info-box { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border: 2px solid #00cec9; color: #2d3436; }
+        .user-name { color: #667eea; font-weight: 600; font-size: 1.1rem; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 25px; font-weight: 600; font-size: 0.9rem; margin: 8px 0; }
+        .status-collected { background: linear-gradient(135deg, #84fab0, #8fd3f4); color: #0d5d2a; }
+        .status-pending { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #e17055; }
+        .checkbox-container { display: flex; align-items: center; gap: 12px; margin: 20px 0; padding: 15px; background: rgba(102, 126, 234, 0.05); border-radius: 12px; border: 2px dashed rgba(102, 126, 234, 0.3); }
+        .custom-checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: #667eea; }
+        .checkbox-label { color: #444; font-weight: 500; cursor: pointer; flex: 1; }
+        .confirm-btn { background: linear-gradient(135deg, #20bf6b, #01a3a4); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; width: 100%; margin-top: 10px; }
+        .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(32, 191, 107, 0.3); }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .icon { margin-right: 8px; font-size: 1.1rem; }
+        .footer { text-align: center; margin-top: 30px; padding: 20px; background: rgba(102, 126, 234, 0.05); border-radius: 15px; color: #666; font-size: 0.9rem; }
+        @media (max-width: 600px) {
+            .container { padding: 25px; margin: 10px; }
+            .input-container { flex-direction: column; }
+            .submit-btn { width: 100%; margin-top: 10px; }
+            .header h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2><i class="fas fa-tshirt icon"></i>Shirt Collection Status</h2>
+            <p class="subtitle">Check and update your shirt collection status</p>
+        </div>
+
+        <div class="form-group">
+            <label for="employeeId" class="form-label">
+                <i class="fas fa-id-card icon"></i>Enter Your EmployeeID
+            </label>
+            <div class="input-container">
+                <div style="position: relative; flex: 1;">
+                    <i class="fas fa-id-card input-icon"></i>
+                    <input type="text" id="employeeId" class="employeeid-input" placeholder="e.g. EMP12345" />
+                </div>
+                <button class="submit-btn" onclick="check()">
+                    <i class="fas fa-search"></i> Check Status
+                </button>
+            </div>
+        </div>
+
+        <div id="result" class="result-container"></div>
+
+        <div class="footer">
+            <i class="fas fa-info-circle icon"></i>
+            Please ensure you enter the correct EmployeeID registered for the event
+        </div>
+    </div>
+
+    <script> 
+    // PDF download function with dynamic background and font color based on Bus Number
+    function downloadPDF(data) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString();
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: [80, 110] // Compact ticket size
+        });
+
+        // Bus color mapping
+        const busColors = {
+            "1": { bg: "#AEDFF7", font: "#222222" },      // Blue
+            "2": { bg: "#FFFACD", font: "#222222" },      // Yellow
+            "3": { bg: "#C1FFC1", font: "#222222" },      // Neon
+            "4": { bg: "#FFDAB9", font: "#222222" },      // Skin
+            "5": { bg: "#E6E6FA", font: "#222222" }       // Grey
+        };
+
+        // Get bus number and color
+        const busNum = (data.busNumber || "").toString().trim();
+        const colorObj = busColors[busNum] || { bg: "#ffffff", font: "#222222" };
+
+        // Draw colored background
+        doc.setFillColor(colorObj.bg);
+        doc.rect(5, 5, 70, 100, "F");
+
+        // Draw border
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.5);
+        doc.rect(5, 5, 70, 100);
+
+        // Set font color
+        doc.setTextColor(colorObj.font);
+
+        // Header
+        doc.setFont("courier", "bold");
+        doc.setFontSize(13);
+        doc.text("P.E.C. 2 0 2 5", 40, 14, {align: "center"});
+        doc.setFontSize(11);
+        doc.text("PRIME DEPOT", 40, 20, {align: "center"});
+
+        // Info line (smaller font, centered) - uses TicketNumber
+        doc.setFont("courier", "normal");
+        doc.setFontSize(9);
+        doc.text(`No. ${data.ticketNumber || ''}  Dt. ${dateStr}  Tm. ${timeStr}`, 40, 26, {align: "center"});
+
+        // Original long dashed line
+        doc.text("------------------------------------", 40, 31, {align: "center"});
+        doc.text("STELLAR    To PUNARNAVA", 40, 36, {align: "center"});
+        doc.text("(Total Journey Km . = 250)", 40, 41, {align: "center"});
+        doc.text("------------------------------------", 40, 46, {align: "center"});
+        doc.setFont("courier", "bold");
+        doc.text("FULL   1 * PRIME Team Member", 40, 51, {align: "center"});
+        doc.setFont("courier", "normal");
+        doc.text(`Bus Number: ${data.busNumber || ''}`, 10, 57);
+        doc.text(`Room No: ${data.roomNumber || ''}`, 10, 62);
+        doc.text(`Name: ${data.name || ''}`, 10, 67);
+        doc.text(`EmployeeID: ${data.employeeId || ''}`, 10, 72);
+
+        doc.text("------------------------------------", 40, 77, {align: "center"});
+        doc.setFont("courier", "bold");
+        doc.text("!! PRIME AAPKA HAMSAFAR !!", 40, 82, {align: "center"});
+        doc.setFont("courier", "normal");
+        doc.text("NOT TRANSFERABLE", 40, 87, {align: "center"});
+        doc.text("HELPLINE:", 10, 92);
+        doc.text("PrimeEventsCommittee@tsys.com", 10, 97);
+
+        doc.save(`PEC_Ticket_${data.ticketNumber || ''}.pdf`);
+    }
+        function check() {
+            const employeeId = document.getElementById("employeeId").value.trim();
+            const resultDiv = document.getElementById("result");
+            
+            if (!employeeId) {
+                resultDiv.innerHTML = `
+                    <div class="result-box error-box">
+                        <i class="fas fa-exclamation-triangle icon"></i>
+                        Please enter your EmployeeID
+                    </div>`;
+                return;
+            }
+
+            // Show loading state
+            resultDiv.innerHTML = `
+                <div class="result-box info-box">
+                    <span class="loading"></span>
+                    <i class="fas fa-search icon"></i>
+                    Checking your registration status...
+                </div>`;
+
+            google.script.run.withSuccessHandler(showResult).checkEmployeeId(employeeId);
+        }
+
+        function showResult(data) {
+            const div = document.getElementById("result");
+            
+            if (!data) {
+                div.innerHTML = `
+                    <div class="result-box error-box">
+                        <i class="fas fa-times-circle icon"></i>
+                        <strong>EmployeeID not found</strong><br>
+                        Please check your EmployeeID or contact the organizers
+                    </div>`;
+                return;
+            }
+
+            window.lastData = data;
+
+            // If already collected, show success message and bus/room info + PDF button
+            if (data.collected === "Yes") {
+                const ts = data.timeStr ? ` on <strong>${data.timeStr}</strong>` : "";
+                div.innerHTML = `
+                    <div class="result-box success-box">
+                        <i class="fas fa-check-circle icon"></i>
+                        <strong>Shirt Already Collected!</strong><br>
+                        You collected your shirt${ts}
+                    </div>
+                    <div class="result-box info-box">
+                        <i class="fas fa-user icon"></i>
+                        Hello <span class="user-name">${data.name}</span>!<br>
+                        <span class="status-badge status-collected">
+                            <i class="fas fa-check icon"></i>Collection Complete
+                        </span><br>
+                        Please board Bus Number <strong>${data.busNumber}</strong>. Your Room No is <strong>${data.roomNumber}</strong>.<br><br>
+                        <button class="confirm-btn" onclick="downloadPDF(window.lastData)">
+                            <i class="fas fa-download"></i> Download Ticket as PDF
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            // Not collected yet: show details + checkbox
+            div.innerHTML = `
+                <div class="result-box info-box">
+                    <i class="fas fa-user icon"></i>
+                    Hello <span class="user-name">${data.name}</span>!<br>
+                    <span class="status-badge status-pending">
+                        <i class="fas fa-clock icon"></i>Pending Collection
+                    </span>
+                </div>
+                <div class="result-box" style="background: white; border: 2px solid #e1e8f0;">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="collected" class="custom-checkbox" />
+                        <label for="collected" class="checkbox-label">
+                            <i class="fas fa-tshirt icon"></i>
+                            I have collected my shirt
+                        </label>
+                    </div>
+                    <button class="confirm-btn" onclick="update(${data.row})">
+                        <i class="fas fa-check icon"></i>Confirm Collection
+                    </button>
+                </div>`;
+        }
+
+        function update(row) {
+            const cb = document.getElementById("collected");
+            if (!cb || !cb.checked) {
+                const div = document.getElementById("result");
+                div.innerHTML += `
+                    <div class="result-box error-box">
+                        <i class="fas fa-exclamation-triangle icon"></i>
+                        Please tick the checkbox to confirm collection
+                    </div>`;
+                setTimeout(() => {
+                    const errorBoxes = document.querySelectorAll('.error-box');
+                    if (errorBoxes.length > 1) {
+                        errorBoxes[errorBoxes.length - 1].remove();
+                    }
+                }, 3000);
+                return;
+            }
+
+            // Show loading state
+            document.getElementById("result").innerHTML = `
+                <div class="result-box info-box">
+                    <span class="loading"></span>
+                    <i class="fas fa-save icon"></i>
+                    Updating your collection status...
+                </div>`;
+
+            google.script.run.withSuccessHandler(function(msg) {
+                document.getElementById("result").innerHTML = `
+                    <div class="result-box success-box">
+                        <i class="fas fa-check-circle icon"></i>
+                        <strong>${msg}</strong><br>
+                        Thank you for confirming your shirt collection!
+                    </div>`;
+            }).updateStatus(row);
+        }
+
+        // Add Enter key support for EmployeeID input
+        document.getElementById("employeeId").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                check();
+            }
+        });
+    </script>
+</body>
+</html>
