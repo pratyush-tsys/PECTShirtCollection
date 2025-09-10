@@ -46,8 +46,10 @@
         .footer { text-align: center; margin-top: 30px; padding: 20px; background: rgba(102, 126, 234, 0.05); border-radius: 15px; color: #666; font-size: 0.9rem; }
         @media (max-width: 600px) {
             .container { padding: 25px; margin: 10px; }
-            .input-container { flex-direction: column; }
-            .submit-btn { width: 100%; margin-top: 10px; }
+            .input-container { flex-direction: column; width: 100%; }
+            .submit-btn { width: 100%; margin-top: 10px;
+                         min-width: 0;
+                        box-sizing: border-box;}
             .header h2 { font-size: 1.8rem; }
         }
     </style>
@@ -139,12 +141,11 @@
         doc.text("(Total Journey Km . = 250)", 40, 41, {align: "center"});
         doc.text("------------------------------------", 40, 46, {align: "center"});
         doc.setFont("courier", "bold");
-        doc.text("FULL   1 * PRIME Team Member", 40, 51, {align: "center"});
+        doc.text(`FULL   1 * ${data.employeeId || ''}`, 40, 51, {align: "center"});
         doc.setFont("courier", "normal");
         doc.text(`Bus Number: ${data.busNumber || ''}`, 10, 57);
         doc.text(`Room No: ${data.roomNumber || ''}`, 10, 62);
         doc.text(`Name: ${data.name || ''}`, 10, 67);
-        doc.text(`EmployeeID: ${data.employeeId || ''}`, 10, 72);
 
         doc.text("------------------------------------", 40, 77, {align: "center"});
         doc.setFont("courier", "bold");
