@@ -11,7 +11,7 @@
         /* ...existing styles... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); animation: slideIn 0.8s ease-out; }
+        .container { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 25px; padding: 50px; max-width: 650px; width: 100%; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); animation: slideIn 0.8s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .header { text-align: center; margin-bottom: 35px; }
         .header h2 { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
@@ -23,6 +23,8 @@
         .employeeid-input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); transform: translateY(-2px); }
         .input-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #999; font-size: 1.1rem; z-index: 2; }
         .submit-btn { padding: 15px 25px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 15px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; min-width: 120px; }
+        .btn-text-short { display: none; }
+        .btn-text { display: inline; }
         .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
         .submit-btn:active { transform: translateY(0); }
         .result-container { margin-top: 30px; }
@@ -67,6 +69,8 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+            .btn-text { display: none; }
+            .btn-text-short { display: inline; }
             .header h2 { 
                 font-size: 1.6rem; 
                 line-height: 1.2;
@@ -105,6 +109,7 @@
                 padding: 14px 16px;
                 font-size: 0.9rem;
             }
+            .btn-text, .btn-text-short { display: none; }
             .employeeid-input {
                 padding: 14px 16px;
                 padding-left: 45px;
@@ -134,7 +139,9 @@
                     <input type="text" id="employeeId" class="employeeid-input" placeholder="e.g. EMP12345" />
                 </div>
                 <button class="submit-btn" onclick="check()">
-                    <i class="fas fa-search"></i> Check Status
+                    <i class="fas fa-search"></i> 
+                    <span class="btn-text">Check Status</span>
+                    <span class="btn-text-short">Check</span>
                 </button>
             </div>
         </div>
