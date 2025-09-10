@@ -344,8 +344,11 @@
                     <div class="result-box success-box">
                         <i class="fas fa-check-circle icon"></i>
                         <strong>${msg}</strong><br>
-                        Thank you for confirming your shirt collection!
-                        <br><br>
+                        Hello <span class="user-name">${window.lastEmployeeData.name}</span>!<br>
+                        <span class="status-badge status-collected">
+                            <i class="fas fa-check icon"></i>Collection Complete
+                        </span><br>
+                        Please board Bus Number <strong>${window.lastEmployeeData.busNumber}</strong>. Your Room No is <strong>${window.lastEmployeeData.roomNumber}</strong>.<br><br>
                         <button class="confirm-btn" onclick="downloadPDF(window.lastEmployeeData)" style="background: linear-gradient(135deg, #667eea, #764ba2); margin-top: 10px;">
                             <i class="fas fa-download icon"></i>
                             Download Ticket as PDF
