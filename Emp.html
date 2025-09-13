@@ -181,14 +181,20 @@
         const busNum = (data.busNumber || "").toString().trim();
         const colorObj = busColors[busNum] || { bg: "#ffffff", font: "#222222" };
 
+        // Draw shadow (slightly offset)
+        doc.setFillColor("#CCCCCC");
+        doc.rect(6, 6, 70, 100, "F");
+
         // Draw colored background
         doc.setFillColor(colorObj.bg);
         doc.rect(5, 5, 70, 100, "F");
 
-        // Draw border
+        // Draw dashed border for tearable effect
         doc.setDrawColor(0, 0, 0);
         doc.setLineWidth(0.5);
-        doc.rect(5, 5, 70, 100);
+        doc.setLineDashPattern([2, 1], 0);
+        doc.rect(5, 5, 70, 100, "S");
+        doc.setLineDashPattern([], 0); // Reset dash pattern
 
         // Set font color
         doc.setTextColor(colorObj.font);
@@ -196,36 +202,52 @@
         // Header
         doc.setFont("courier", "bold");
         doc.setFontSize(13);
-        doc.text("P.E.C. 2 0 2 5", 40, 14, {align: "center"});
-        doc.setFontSize(11);
-        doc.text("PRIME DEPOT", 40, 20, {align: "center"});
+        doc.text("P.R.I.M.E DEPOT", 40, 14, {align: "center"});
 
-        // Info line (smaller font, centered) - uses TicketNumber
+        // Info line (smaller font, centered) - date and time only
         doc.setFont("courier", "normal");
         doc.setFontSize(9);
-        doc.text(`No. ${data.ticketNumber || ''}  Dt. ${dateStr}  Tm. ${timeStr}`, 40, 26, {align: "center"});
-
+        doc.text(`Date: ${dateStr}  Time: ${timeStr}`, 40, 22, {align: "center"});
         // Original long dashed line
         doc.text("------------------------------------", 40, 31, {align: "center"});
-        doc.text("STELLAR    To PUNARNAVA", 40, 36, {align: "center"});
-        doc.text("(Total Journey Km . = 250)", 40, 41, {align: "center"});
-        doc.text("------------------------------------", 40, 46, {align: "center"});
+        doc.setFontSize(11);
         doc.setFont("courier", "bold");
-        doc.text(`FULL   1 * ${data.employeeId || ''}`, 40, 51, {align: "center"});
+        doc.text("PRIME OUTING 2025", 40, 36, {align: "center"});
+        doc.setFontSize(9);
+        doc.text("------------------------------------", 40, 41, {align: "center"});
         doc.setFont("courier", "normal");
-        doc.text(`Bus Number: ${data.busNumber || ''}`, 10, 57);
-        doc.text(`Room No: ${data.roomNumber || ''}`, 10, 62);
-        doc.text(`Name: ${data.name || ''}`, 10, 67);
+        doc.text(`Employee ID : ${data.employeeId || ''}`, 10, 46);
+        doc.text(`Bus Number  : ${data.busNumber || ''}`, 10, 52);
+        doc.text(`Room Number : ${data.roomNumber || ''}`, 10, 57);
+        doc.text(`Name        : ${data.name || ''}`, 10, 62);
+        
+        // Add room partners if available
+        let nextYPos = 67; // Starting position after Name
+        if (data.roomPartners && data.roomPartners.length > 0) {
+            doc.setFontSize(9);
+            doc.text("Partner in Crime ( Room Edition)", 10, nextYPos);
+            nextYPos += 3; // Small gap after "Room Partners:" label
+            
+            data.roomPartners.forEach((partner, index) => {
+                if (nextYPos <= 82) { // Ensure we don't go beyond reasonable boundary
+                    doc.text(`${index + 1}. ${partner}`, 10, nextYPos);
+                    nextYPos += 3; // Tighter spacing between partners
+                }
+            });
+            nextYPos += 2; // Small gap after partners list
+        } else {
+            nextYPos += 3; // Small gap when no partners
+        }
 
-        doc.text("------------------------------------", 40, 77, {align: "center"});
+        doc.text("------------------------------------", 40, nextYPos, {align: "center"});
         doc.setFont("courier", "bold");
-        doc.text("!! PRIME AAPKA HAMSAFAR !!", 40, 82, {align: "center"});
+        doc.text("!! PRIME AAPKA HAMSAFAR !!", 40, nextYPos + 5, {align: "center"});
         doc.setFont("courier", "normal");
-        doc.text("NOT TRANSFERABLE", 40, 87, {align: "center"});
-        doc.text("HELPLINE:", 10, 92);
-        doc.text("PrimeEventsCommittee@tsys.com", 10, 97);
+        doc.text("Aapki Yatra MangalMay Ho !", 40, nextYPos + 10, {align: "center"});
+        doc.setFont("courier", "normal");
+        doc.text(`HELPLINE: ${data.busSPOCNumber || 'N/A'}`, 10, nextYPos + 15);
 
-        doc.save(`PEC_Ticket_${data.ticketNumber || ''}.pdf`);
+        doc.save(`PEC_Ticket_${data.employeeId || ''}.pdf`);
     }
         function check() {
             const employeeId = document.getElementById("employeeId").value.trim();
